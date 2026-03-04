@@ -2,7 +2,7 @@
 **Plugin for configuring and creating the user content of LOOPIS.app**
 
 ## 💡 Status
-We are working on replacing third party plugins like "gravatar" and ""
+We are working on replacing third party plugins like "Gravatar" and "One User Avatar"
 
 ## 💾 Installation
 Installation + updates will be managed by plugin "LOOPIS Config".
