@@ -1,13 +1,11 @@
-# 🗂 LOOPIS Users
-**Plugin for configuring and creating the user content of LOOPIS.app**
+# 👥 LOOPIS Users
+**Plugin for customizing the management of user accounts in LOOPIS.app**
 
 ## 💡 Status
-We are working on replacing third party plugins like "Gravatar" and "One User Avatar"
+We are working on replacing third party plugins like "One User Avatar" and "WPUM custom fields" → [CHANGELOG.md](CHANGELOG.md)
 
 ## 💾 Installation
 Installation + updates will be managed by plugin "LOOPIS Config".
-After installation: Flush permalinks in WP Admin settings!
 
 ## 👤 Contributors
 Hubert Hilborn
-
