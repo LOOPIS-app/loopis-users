@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "../../../../.."
+		},
+		{
+			"path": "../loopis-admin-main"
+		},
+		{
+			"path": "../loopis-develooper-main"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../loopis-config"
+		},
+		{
+			"path": "../loopis-content-staging"
+		},
+		{
+			"path": "../../themes/loopis-theme-main"
+		}
+	],
+	"settings": {}
+}
