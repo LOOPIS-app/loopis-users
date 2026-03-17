@@ -1,4 +1,10 @@
 <?php
+/**
+ * Function to replace user avatars with loopis avatars.
+ * 
+ * @package LOOPIS_Users
+ * @subpackage User_Avatars
+ */
 
 // Prevent direct access
 if (!defined('ABSPATH')) { 
@@ -7,6 +13,11 @@ if (!defined('ABSPATH')) {
 
 add_filter('get_avatar', 'loopis_avatars', 10, 5);
 
+/**
+ * Redirect get avatar to local image.
+ * 
+ * @return html
+ */
 function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
 
     $user = false;
@@ -25,14 +36,19 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
 
     // avatar paths
     $default_avatar = plugin_dir_url(__FILE__) . 'assets/img/user_avatar-240x240.png';
+    $current_avatar = plugin_dir_url(__FILE__) . 'assets/img/current_user_avatar-240x240.png';
     $admin_avatar   = plugin_dir_url(__FILE__) . 'assets/img/admin_1_avatar-240x240.png';
     $develooper_avatar = plugin_dir_url(__FILE__) . 'assets/img/admin_2_avatar-240x240.png';
     $LOOPIS_avatar   = plugin_dir_url(__FILE__) . 'assets/img/LOOP_avatar-240x240.png';
 
-    // check if admin
-    if ($user->user_nicename === 'loopis') {
+    $current_user = wp_get_current_user();
+    if ($user->ID === $current_user->ID) {
+        $url = $current_avatar;
+    }elseif ($user->user_nicename === 'loopis') {
         $url = $LOOPIS_avatar;
     }elseif (in_array('administrator', $user->roles)) {
+        $url = $develooper_avatar;
+    }elseif (in_array('manager', $user->roles)) {
         $url = $admin_avatar;
     } else {
         $url = $default_avatar;
