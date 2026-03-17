@@ -16,7 +16,7 @@ add_filter('get_avatar', 'loopis_avatars', 10, 5);
 /**
  * Redirect get avatar to local image.
  * 
- * @return html
+ * @return string HTML output url
  */
 function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
 
@@ -39,7 +39,7 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
     $current_avatar = plugin_dir_url(__FILE__) . 'assets/img/current_user_avatar-240x240.png';
     $admin_avatar   = plugin_dir_url(__FILE__) . 'assets/img/admin_1_avatar-240x240.png';
     $develooper_avatar = plugin_dir_url(__FILE__) . 'assets/img/admin_2_avatar-240x240.png';
-    $LOOPIS_avatar   = plugin_dir_url(__FILE__) . 'assets/img/LOOP_avatar-240x240.png';
+    $LOOPIS_avatar   = plugin_dir_url(__FILE__) . 'assets/img/loopis_green_avatar-240x240.png';
 
     $current_user = wp_get_current_user();
     if ($user->ID === $current_user->ID) {
