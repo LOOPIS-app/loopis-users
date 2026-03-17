@@ -35,23 +35,26 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
     }
 
     // avatar paths
-    $default_avatar = plugin_dir_url(__FILE__) . 'assets/img/user_avatar-240x240.png';
-    $current_avatar = plugin_dir_url(__FILE__) . 'assets/img/current_user_avatar-240x240.png';
-    $admin_avatar   = plugin_dir_url(__FILE__) . 'assets/img/admin_1_avatar-240x240.png';
-    $develooper_avatar = plugin_dir_url(__FILE__) . 'assets/img/admin_2_avatar-240x240.png';
-    $LOOPIS_avatar   = plugin_dir_url(__FILE__) . 'assets/img/loopis_green_avatar-240x240.png';
+    $default_url = plugin_dir_url(__FILE__) . 'assets/img/avatar_user_default.png';
+    $current_url = plugin_dir_url(__FILE__) . 'assets/img/avatar_user_current.png';
+    $manager_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar_user_manager.png';
+    $loopis_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar_loopis.png';
+    $lotten_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar_lotten.png';
+    $nisse_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar_nisse.png';
 
     $current_user = wp_get_current_user();
     if ($user->ID === $current_user->ID) {
-        $url = $current_avatar;
-    }elseif ($user->user_nicename === 'loopis') {
-        $url = $LOOPIS_avatar;
-    }elseif (in_array('administrator', $user->roles)) {
-        $url = $develooper_avatar;
-    }elseif (in_array('manager', $user->roles)) {
-        $url = $admin_avatar;
+        $url = $current_url;
+    } elseif ($user->user_nicename === 'loopis') {
+        $url = $loopis_url;
+    } elseif ($user->user_nicename === 'lotten') {
+        $url = $lotten_url;
+    } elseif ($user->user_nicename === 'nisse') {
+        $url = $nisse_url;
+    } elseif (in_array('manager', $user->roles)) {
+        $url = $manager_url;
     } else {
-        $url = $default_avatar;
+        $url = $default_url;
     }
 
     return "<img src='{$url}' class='avatar avatar-{$size}' width='{$size}' height='{$size}' alt='{$alt}' />";
