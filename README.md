@@ -8,4 +8,4 @@ We are working on replacing third party plugins like "One User Avatar" and "WPUM
 Installation + updates will be managed by plugin "LOOPIS Config".
 
 ## 👤 Contributors
-Hubert Hilborn
+Hubert Hilborn, Johan Hagvil
