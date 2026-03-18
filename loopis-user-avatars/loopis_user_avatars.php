@@ -35,9 +35,9 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
     }
 
     // Local image paths
-    $user_default_url = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_default.png';
-    $user_manager_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_manager.png';
+    $user_url = plugin_dir_url(__FILE__) . 'assets/img/avatar/user.png';
     $user_current_url = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_current.png';
+    $user_manager_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_manager.png';
     $user_manager_current_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_manager_current.png';
     $loopis_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/loopis.png';
     $lotten_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/lotten.png';
@@ -60,7 +60,7 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
     } elseif (in_array('manager', $user->roles)) {
         $url = $user_manager_url;
     } else {
-        $url = $user_default_url;
+        $url = $user_url;
     }
 
     return "<img src='{$url}' class='avatar avatar-{$size}' width='{$size}' height='{$size}' alt='{$alt}' />";
