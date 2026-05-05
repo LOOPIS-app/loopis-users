@@ -63,5 +63,12 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
         $url = $user_url;
     }
 
-    return "<img src='{$url}' class='avatar avatar-{$size}' width='{$size}' height='{$size}' alt='{$alt}' />";
+    $author_url = get_author_posts_url($user->ID, $user->user_nicename);
+    $avatar_img = "<img src='{$url}' class='avatar avatar-{$size}' width='{$size}' height='{$size}' alt='{$alt}' />";
+
+    if (!$author_url) {
+        return $avatar_img;
+    }
+
+    return "<a href='" . esc_url($author_url) . "' class='avatar-link'>{$avatar_img}</a>";
 }
