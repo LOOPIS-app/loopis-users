@@ -35,13 +35,13 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
     }
 
     // Local image paths
-    $user_url = plugin_dir_url(__FILE__) . 'assets/img/avatar/user.png';
-    $user_current_url = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_current.png';
-    $user_manager_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_manager.png';
-    $user_manager_current_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/user_manager_current.png';
-    $loopis_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/loopis.png';
-    $lotten_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/lotten.png';
-    $nisse_url   = plugin_dir_url(__FILE__) . 'assets/img/avatar/nisse.png';
+    $user_url = LOOPIS_USERS_URL . 'assets/img/avatar/user.png';
+    $user_current_url = LOOPIS_USERS_URL . 'assets/img/avatar/user_current.png';
+    $user_manager_url   = LOOPIS_USERS_URL . 'assets/img/avatar/user_manager.png';
+    $user_manager_current_url   = LOOPIS_USERS_URL . 'assets/img/avatar/user_manager_current.png';
+    $loopis_url   = LOOPIS_USERS_URL . 'assets/img/avatar/loopis.png';
+    $lotten_url   = LOOPIS_USERS_URL . 'assets/img/avatar/lotten.png';
+    $nisse_url   = LOOPIS_USERS_URL . 'assets/img/avatar/nisse.png';
 
     $current_user = wp_get_current_user();
 
