@@ -1,6 +1,6 @@
 <?php
 /**
- * Function to replace user avatars with loopis avatars.
+ * Replace user avatars with LOOPIS avatars.
  * 
  * @package LOOPIS_Users
  * @subpackage User_Avatars

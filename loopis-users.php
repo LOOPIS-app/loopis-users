@@ -3,7 +3,7 @@
 * Plugin Name:  LOOPIS Users
 * Plugin URI:   https://github.com/LOOPIS-app/loopis-users
 * Description:  Plugin for configuring user management in LOOPIS.app
-* Version:      0.02
+* Version:      0.03
 * Author:       The Develoopers
 * Author URI:   https://loopis.org
 * License:      GPL-3.0-or-later
@@ -26,11 +26,12 @@ if (!defined('ABSPATH')) {
 }
 
 // Define plugin version
-define('LOOPIS_USERS_VERSION', '0.02');
+define('LOOPIS_USERS_VERSION', '0.03');
 
 // Define plugin folder path constants
 define('LOOPIS_USERS_DIR', plugin_dir_path(__FILE__)); // Server-side path to /wp-content/plugins/loopis-users/
 define('LOOPIS_USERS_URL', plugin_dir_url(__FILE__));  // Client-side path to https://site.com/wp-content/plugins/loopis-users/
 
-// Use LOOPIS avatars
-include_once LOOPIS_USERS_DIR . 'functions/loopis_user_avatars.php';
+// Include necessary files
+include_once LOOPIS_USERS_DIR . 'filters/loopis_user_avatars.php';
+include_once LOOPIS_USERS_DIR . 'filters/loopis_user_roles.php';
