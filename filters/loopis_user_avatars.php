@@ -45,11 +45,11 @@ function loopis_avatars($avatar, $id_or_email, $size, $default, $alt) {
 
     $current_user = wp_get_current_user();
 
-    if ($user->user_nicename === 'loopis') {
+    if ($user->user_nicename === 'LOOPIS') {
         $url = $loopis_url;
-    } elseif ($user->user_nicename === 'lotten') {
+    } elseif ($user->user_nicename === 'LOTTEN') {
         $url = $lotten_url;
-    } elseif ($user->user_nicename === 'nisse') {
+    } elseif ($user->user_nicename === 'NISSE') {
         $url = $nisse_url;
     } elseif ($user->ID === $current_user->ID) {
         if (in_array('manager', $user->roles)) {
