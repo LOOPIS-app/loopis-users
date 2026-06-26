@@ -1,5 +1,8 @@
 # 📋 Changelog for "LOOPIS Users"
 
+## 0.04 (2026-06-XX)
+- Mail template handling (work in progress)
+
 ## 0.03 (2026-06-10)
 - Enable multiple roles for users (replacing plugin WPUM)
 

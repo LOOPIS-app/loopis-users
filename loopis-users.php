@@ -33,5 +33,5 @@ define('LOOPIS_USERS_DIR', plugin_dir_path(__FILE__)); // Server-side path to /w
 define('LOOPIS_USERS_URL', plugin_dir_url(__FILE__));  // Client-side path to https://site.com/wp-content/plugins/loopis-users/
 
 // Include necessary files
-include_once LOOPIS_USERS_DIR . 'filters/loopis_user_avatars.php';
-include_once LOOPIS_USERS_DIR . 'filters/loopis_user_roles.php';
+include_once LOOPIS_USERS_DIR . 'includes/filters/loopis_user_avatars.php';
+include_once LOOPIS_USERS_DIR . 'includes/filters/loopis_user_roles.php';
