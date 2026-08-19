@@ -35,3 +35,32 @@ define('LOOPIS_USERS_URL', plugin_dir_url(__FILE__));  // Client-side path to ht
 // Include necessary files
 include_once LOOPIS_USERS_DIR . 'filters/loopis_user_avatars.php';
 include_once LOOPIS_USERS_DIR . 'filters/loopis_user_roles.php';
+
+
+/*
+ * ========================================================
+ *                     TESTING GROUND
+ * ========================================================
+ */
+
+add_action('admin_menu', function () {
+    add_menu_page(
+        'CM-test',
+        'CM-test',
+        '',
+        'CM-test',
+        'CM_test_page',
+        'dashicons-database-import',
+        80
+    );
+});
+
+function CM_test_page(){
+    include_once LOOPIS_USERS_DIR . 'comment-mention/loopis_user_mention.php';
+}
+
+
+
+
+
+
