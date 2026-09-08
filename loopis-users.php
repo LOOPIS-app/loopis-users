@@ -35,7 +35,7 @@ define('LOOPIS_USERS_URL', plugin_dir_url(__FILE__));  // Client-side path to ht
 // Include necessary files
 include_once LOOPIS_USERS_DIR . 'filters/loopis_user_avatars.php';
 include_once LOOPIS_USERS_DIR . 'filters/loopis_user_roles.php';
-
+include_once LOOPIS_USERS_DIR . 'pn_map/loopis_postnum_map.php';
 
 /*
  * ========================================================
@@ -62,5 +62,46 @@ function CM_test_page(){
 
 
 
+add_action('rest_api_init', function () {
+    register_rest_route('my-plugin/v1', '/user-logins', [
+        'methods'  => WP_REST_Server::READABLE,
+
+        // Authorization—not just authentication.
+        'permission_callback' => function () {
+            return current_user_can('list_users');
+        },
+
+        'callback' => function () {
+            $users = get_users([
+                'fields' => ['ID', 'user_login'],
+                'orderby' => 'ID',
+                'order' => 'ASC',
+            ]);
+
+            $result = array_map(function ($user) {
+                return [
+                    'id'    => (int) $user->ID,
+                    'login' => $user->user_login,
+                ];
+            }, $users);
+
+            return rest_ensure_response($result);
+        },
+    ]);
+});
 
 
+add_action('admin_enqueue_scripts', function ($hook) {
+    wp_enqueue_script(
+        'my-plugin-admin',
+        plugin_dir_url(__FILE__) . 'admin.js',
+        ['wp-api'],
+        '1.0.0',
+        true
+    );
+
+    wp_localize_script('my-plugin-admin', 'MyPluginData', [
+        'restUrl' => esc_url_raw(rest_url('my-plugin/v1/user-logins')),
+        'nonce'   => wp_create_nonce('wp_rest'),
+    ]);
+});
