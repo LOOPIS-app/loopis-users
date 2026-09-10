@@ -7,7 +7,8 @@
  */
 
 function loopis_get_city(string $post_code){
-    $csv_path =  __DIR__ . '/../assets/sweden-zipcode.csv';
+    $plugin_root = defined('LOOPIS_USERS_DIR') ? LOOPIS_USERS_DIR : dirname(__DIR__, 2);
+    $csv_path = $plugin_root . '/assets/sweden-zipcode.csv';
     
     $post_code = loopis_normalize_postcode($post_code);
 
