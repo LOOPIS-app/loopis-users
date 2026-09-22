@@ -26,7 +26,7 @@ function loopis_get_city(string $post_code){
 
         if ($row[0]===$post_code){
             fclose($csv_file);
-            return ucfirst(strtolower(trim($row[1])));
+            return mb_ucfirst(mb_strtolower(trim($row[1]), 'UTF-8'), 'UTF-8');
         }
     }
 

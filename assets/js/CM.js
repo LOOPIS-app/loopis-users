@@ -1,8 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
-const ta = document.getElementById('');
+const ta = document.getElementById('ta');
 const menu = document.getElementById('menu');
 let triggerIndex = -1;
-let suggestions = ['Aubert','Aabert','Azubert','Bubert','Chubert','Dubert','Eubert','Fubert']; 
+let suggestions =[];
+async function fetchUserLogins() {
+  const response = await fetch(MyPluginData.restUrl, {
+    method: "GET",
+    headers: {
+      "X-WP-Nonce": MyPluginData.nonce
+    },
+    credentials: "same-origin"
+  });
+
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+fetchUserLogins()
+  .then(users => {
+    console.log(users);
+    suggestions.push(...users.map(user => user.login));
+    console.log(suggestions);
+  })
+  .catch(error => {
+    console.error("Could not load user logins:", error);
+  });
 
 function getQuery(text, pos) {
   const before = text.slice(0, pos);
@@ -28,7 +53,7 @@ function onInput(e){
   triggerIndex = r.start;
   const matches = suggestions.filter(s => s.toLowerCase().startsWith(q));
   const rect = ta.getBoundingClientRect();
-  showMenu(matches, rect.left, rect.bottom );
+  showMenu(matches, rect.left-175, rect.top-10);
 }
 
 function onKey(e){
