@@ -134,28 +134,77 @@ function loopis_user_roles_admin_ui_tweaks() {
     <script>
     (function() {
         var panel = document.getElementById('loopis-multi-roles-panel');
+
         if (!panel) {
             return;
         }
 
-        var nativeRoleSelect = document.querySelector('select#role, select[name="role"]');
+        var nativeRoleSelect = document.querySelector(
+            'select#role, select[name="role"]'
+        );
+
         if (!nativeRoleSelect) {
             return;
         }
 
         var nativeRoleRow = nativeRoleSelect.closest('tr');
+
         if (!nativeRoleRow) {
             return;
         }
 
-        // Hide native single-role row to avoid conflicting assignment UX.
+        var form = nativeRoleSelect.form;
+
+        if (!form) {
+            return;
+        }
+
         nativeRoleRow.style.display = 'none';
         nativeRoleSelect.disabled = true;
 
-        // Move custom multi-role block next to where role settings normally live.
+
+        var hiddenRole = form.querySelector(
+            'input[type="hidden"][name="role"]'
+        );
+
+        if (!hiddenRole) {
+            hiddenRole = document.createElement('input');
+            hiddenRole.type = 'hidden';
+            hiddenRole.name = 'role';
+            form.appendChild(hiddenRole);
+        }
+
+
+        function syncPrimaryRole() {
+            var checkedRole = panel.querySelector(
+                'input[name="loopis_roles[]"]:checked'
+            );
+
+            if (checkedRole) {
+                hiddenRole.value = checkedRole.value;
+            } else {
+                hiddenRole.value = nativeRoleSelect.value || 'member';
+            }
+        }
+
+
+        var roleCheckboxes = panel.querySelectorAll(
+            'input[name="loopis_roles[]"]'
+        );
+
+        for (var i = 0; i < roleCheckboxes.length; i++) {
+            roleCheckboxes[i].addEventListener('change', syncPrimaryRole);
+        }
+
+        syncPrimaryRole();
+
         var roleSection = nativeRoleRow.closest('table.form-table');
+
         if (roleSection && roleSection.parentNode) {
-            roleSection.parentNode.insertBefore(panel, roleSection.nextSibling);
+            roleSection.parentNode.insertBefore(
+                panel,
+                roleSection.nextSibling
+            );
         }
     })();
     </script>
@@ -226,7 +275,7 @@ function loopis_save_user_roles( $user_id ) {
 /**
  * Save multiple roles for newly registered user.
  *
- * @param int $user_id User ID.
+ * @param int $user_id User ID. 
  * @return void
  */
 function loopis_save_new_user_roles( $user_id ) {
