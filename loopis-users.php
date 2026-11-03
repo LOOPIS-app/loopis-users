@@ -32,3 +32,4 @@ define('LOOPIS_USERS_VERSION', '0.04');
 include_once LOOPIS_USERS_DIR . '/includes/filters/loopis-user-avatars.php';
 include_once LOOPIS_USERS_DIR . '/includes/filters/loopis-user-roles.php';
 include_once LOOPIS_USERS_DIR . '/includes/filters/loopis-ping.php';
+

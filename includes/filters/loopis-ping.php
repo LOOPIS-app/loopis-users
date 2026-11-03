@@ -28,11 +28,13 @@ add_action('rest_api_init', function () {
                 return [
                     'id'    => (int) $user->ID,
                     'login' => $user->user_login,
+                    'display_name' => $user->display_name,
                 ];
             }, $users);
             array_unshift($result, [
                 'id'    => 0,
                 'login' => 'admin',
+                'display_name' => 'Admin',
             ]);
 
             return rest_ensure_response($result);
@@ -46,7 +48,7 @@ add_action('wp_enqueue_scripts', function () {
     }
     wp_register_script(
         'loopis-users-mentions',
-        LOOPIS_USERS_URL . '/assets/js/CM.js',
+        LOOPIS_USERS_URL . '/assets/js/ping.js',
         [],
         LOOPIS_USERS_VERSION,
         true

@@ -22,7 +22,6 @@ if (!menu) {
   menu.addEventListener('pointerdown', (event) => {
     const li = event.target.closest('li');
     if (li) {
-      // Keep focus and the textarea selection intact until insertion.
       event.preventDefault();
       choose(li);
     }
@@ -47,7 +46,16 @@ if (!menu) {
 
       const users = await response.json();
       suggestions = Array.isArray(users)
-        ? users.map((user) => user.login).filter((login) => typeof login === 'string')
+        ? users
+            .filter(
+              (user) =>
+                typeof user.login === 'string' &&
+                typeof user.display_name === 'string'
+            )
+            .map((user) => ({
+              login: user.login,
+              displayName: user.display_name,
+            }))
         : [];
     } catch (error) {
       console.error('Could not load user logins:', error);
@@ -113,10 +121,11 @@ if (!menu) {
 function showMenu(items, x, y) {
   menu.replaceChildren();
 
-  items.forEach((item, index) => {
+  items.forEach((user, index) => {
     const li = document.createElement('li');
     li.dataset.index = String(index);
-    li.textContent = item;
+    li.dataset.login = user.login;
+    li.textContent = user.displayName;
     menu.appendChild(li);
   });
 
@@ -173,9 +182,10 @@ function showMenu(items, x, y) {
 
     const query = result.query.toLowerCase();
     const matches = suggestions
-      .filter((login) => login.toLowerCase().startsWith(query))
+      .filter((user) =>
+        user.login.toLowerCase().startsWith(query)
+      )
       .slice(0, 10);
-
     const caret = getCaretCoordinates(ta, position);
     showMenu(matches, caret.left, caret.top);
   }
@@ -216,7 +226,7 @@ function showMenu(items, x, y) {
       return;
     }
 
-    const value = li.textContent;
+    const value = li.dataset.login;
     const before = ta.value.slice(0, triggerIndex);
     const after = ta.value.slice(ta.selectionStart);
     const token = `@${value} `;
