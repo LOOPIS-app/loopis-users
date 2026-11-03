@@ -20,7 +20,7 @@ add_action('rest_api_init', function () {
                 'blog_id' => get_current_blog_id(),
                 'exclude' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
                 'fields' => ['ID', 'user_login', 'display_name'],
-                'orderby' => 'user_login',
+                'orderby' => 'display_name',
                 'order' => 'ASC',
             ]);
 
@@ -82,8 +82,8 @@ function loopis_mention_mail(string $comment_content, int $comment_id, int $send
     $post_title = get_the_title($comment->comment_post_ID);
     $post_link = get_permalink( $comment->comment_post_ID );
 
-    $comment_content = preg_replace('/\t+/', '', $comment_content); // Remove all tabs
-    $comment_content = preg_replace('/\n\s+/', "\n", $comment_content); // Remove leading spaces on new lines
+    $comment_content = preg_replace('/\t+/', '', $comment_content); 
+    $comment_content = preg_replace('/\n\s+/', "\n", $comment_content); 
     $subject = "🔔 {$post_title}";
     $headers = loopis_mail_headers();
     $outro = array(loopis_mail_ping($sender_name, $post_link, $post_title));

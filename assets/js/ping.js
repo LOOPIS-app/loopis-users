@@ -57,6 +57,7 @@ if (!menu) {
               displayName: user.display_name,
             }))
         : [];
+        suggestions.forEach((user)=>{console.log(user.displayName)});
     } catch (error) {
       console.error('Could not load user logins:', error);
       suggestions = [];
@@ -65,15 +66,14 @@ if (!menu) {
 
   function getQuery(text, pos) {
     const before = text.slice(0, pos);
-    const match = before.match(/@([a-zA-Z0-9_.-]*)$/);
+    const match = before.match(/@([\p{L}\p{N}\p{M}_.-]*)$/u);
 
     if (!match) {
       return null;
     }
 
-    // Don’t trigger inside a larger username-like token.
     const start = pos - match[1].length - 1;
-    if (start > 0 && /[a-zA-Z0-9_.-]/.test(text[start - 1])) {
+    if (start > 0 && /[\p{L}\p{N}\p{M}_.-]/u.test(text[start - 1])) {
       return null;
     }
 
@@ -181,11 +181,24 @@ function showMenu(items, x, y) {
     triggerIndex = result.start;
 
     const query = result.query.toLowerCase();
-    const matches = suggestions
-      .filter((user) =>
-        user.login.toLowerCase().startsWith(query)
-      )
+    const normalize = (value) => value.trim().normalize("NFC").toLowerCase();
+    const normalizedQuery = normalize(query);
+    
+    let matches = suggestions
+      .filter((user) => normalize(user.displayName).startsWith(normalizedQuery))
       .slice(0, 10);
+
+    if (matches.length === 0) {
+      matches = suggestions
+        .filter((user) =>
+          normalize(user.displayName)
+            .split(/\s+/)
+            .slice(1)
+            .some((part) => part.startsWith(normalizedQuery))
+        )
+        .slice(0, 10);
+    }
+    
     const caret = getCaretCoordinates(ta, position);
     showMenu(matches, caret.left, caret.top);
   }
