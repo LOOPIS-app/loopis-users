@@ -57,7 +57,6 @@ if (!menu) {
               displayName: user.display_name,
             }))
         : [];
-        suggestions.forEach((user)=>{console.log(user.displayName)});
     } catch (error) {
       console.error('Could not load user logins:', error);
       suggestions = [];
