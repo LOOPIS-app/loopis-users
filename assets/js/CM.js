@@ -1,93 +1,231 @@
 document.addEventListener('DOMContentLoaded', () => {
-const ta = document.getElementById('ta');
-const menu = document.getElementById('menu');
-let triggerIndex = -1;
-let suggestions =[];
-async function fetchUserLogins() {
-  const response = await fetch(MyPluginData.restUrl, {
-    method: "GET",
-    headers: {
-      "X-WP-Nonce": MyPluginData.nonce
-    },
-    credentials: "same-origin"
+const ta = document.getElementById('comment');
+
+if (!ta || !window.loopisUserData) {
+  return;
+}
+let menu = document.getElementById('loopis-mention-menu');
+
+if (!menu) {
+  menu = document.createElement('ul');
+  menu.id = 'loopis-mention-menu';
+  document.body.appendChild(menu);
+}
+
+  let suggestions = [];
+  let triggerIndex = -1;
+
+  ta.addEventListener('click', onInput);
+  ta.addEventListener('input', onInput);
+  ta.addEventListener('keydown', onKey);
+
+  menu.addEventListener('pointerdown', (event) => {
+    const li = event.target.closest('li');
+    if (li) {
+      // Keep focus and the textarea selection intact until insertion.
+      event.preventDefault();
+      choose(li);
+    }
   });
 
-  if (!response.ok) {
-    throw new Error(`Request failed: ${response.status}`);
+  loadSuggestions();
+
+  async function loadSuggestions() {
+    try {
+      const response = await fetch(loopisUserData.restUrl, {
+        method: 'GET',
+        headers: {
+          'X-WP-Nonce': loopisUserData.nonce,
+          'Accept': 'application/json',
+        },
+        credentials: 'same-origin',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+      }
+
+      const users = await response.json();
+      suggestions = Array.isArray(users)
+        ? users.map((user) => user.login).filter((login) => typeof login === 'string')
+        : [];
+    } catch (error) {
+      console.error('Could not load user logins:', error);
+      suggestions = [];
+    }
   }
 
-  return response.json();
-}
+  function getQuery(text, pos) {
+    const before = text.slice(0, pos);
+    const match = before.match(/@([a-zA-Z0-9_.-]*)$/);
 
-fetchUserLogins()
-  .then(users => {
-    console.log(users);
-    suggestions.push(...users.map(user => user.login));
-    console.log(suggestions);
-  })
-  .catch(error => {
-    console.error("Could not load user logins:", error);
-  });
+    if (!match) {
+      return null;
+    }
 
-function getQuery(text, pos) {
-  const before = text.slice(0, pos);
-  const m = before.match(/@([a-zA-Z0-9_]*)$/);
-  return m ? { q: m[1], start: pos - m[1].length - 1 } : null;
-}
+    // Don’t trigger inside a larger username-like token.
+    const start = pos - match[1].length - 1;
+    if (start > 0 && /[a-zA-Z0-9_.-]/.test(text[start - 1])) {
+      return null;
+    }
 
+    return { query: match[1], start };
+  }
+
+  function getCaretCoordinates(textarea, position) {
+    const style = getComputedStyle(textarea);
+    const rect = textarea.getBoundingClientRect();
+    const mirror = document.createElement('div');
+
+    for (const prop of [
+      'font', 'letterSpacing', 'lineHeight', 'textAlign', 'textIndent',
+      'textTransform', 'wordSpacing', 'padding', 'border', 'boxSizing',
+      'whiteSpace', 'overflowWrap',
+    ]) {
+      mirror.style[prop] = style[prop];
+    }
+
+    Object.assign(mirror.style, {
+      position: 'fixed',
+      left: `${rect.left}px`,
+      top: `${rect.top}px`,
+      width: `${textarea.clientWidth}px`,
+      height: `${textarea.clientHeight}px`,
+      visibility: 'hidden',
+      overflow: 'hidden',
+    });
+
+    mirror.textContent = textarea.value.slice(0, position);
+
+    const marker = document.createElement('span');
+    marker.textContent = '\u200b';
+    mirror.appendChild(marker);
+    document.body.appendChild(mirror);
+
+    mirror.scrollTop = textarea.scrollTop;
+    mirror.scrollLeft = textarea.scrollLeft;
+
+    const caret = marker.getBoundingClientRect();
+    mirror.remove();
+
+    return { left: caret.left, top: caret.top };
+  }
 function showMenu(items, x, y) {
-  menu.innerHTML = items.map((it,i)=>`<li data-i="${i}" style="padding:4px;cursor:pointer">${it}</li>`).join('');
-  menu.style.left = x + 'px'; menu.style.top = y + 'px'; menu.style.display = items.length ? 'block' : 'none';
-}
+  menu.replaceChildren();
 
-function hideMenu(){ menu.style.display='none'; triggerIndex=-1; }
+  items.forEach((item, index) => {
+    const li = document.createElement('li');
+    li.dataset.index = String(index);
+    li.textContent = item;
+    menu.appendChild(li);
+  });
 
-ta.addEventListener('input', onInput);
-ta.addEventListener('keydown', onKey);
-
-function onInput(e){
-  const pos = ta.selectionStart;
-  const r = getQuery(ta.value, pos);
-  if(!r){ hideMenu(); return; }
-  const q = r.q.toLowerCase();
-  triggerIndex = r.start;
-  const matches = suggestions.filter(s => s.toLowerCase().startsWith(q));
-  const rect = ta.getBoundingClientRect();
-  showMenu(matches, rect.left-175, rect.top-10);
-}
-
-function onKey(e){
-  if(menu.style.display==='none') return;
-  const items = Array.from(menu.children);
-  const selected = menu.querySelector('.sel');
-  if(e.key === 'ArrowDown'){ e.preventDefault(); move(1); }
-  else if(e.key === 'ArrowUp'){ e.preventDefault(); move(-1); }
-  else if(e.key === 'Enter'){ e.preventDefault(); choose(items[selectedIndex()]); }
-  else if(e.key === 'Escape'){ hideMenu(); }
-
-  function move(dir){
-    let i = selectedIndex();
-    i = Math.max(0, Math.min(items.length-1, i + dir));
-    items.forEach(it=>it.classList.remove('sel'));
-    items[i].classList.add('sel');
+  if (!items.length) {
+    menu.style.display = 'none';
+    return;
   }
-  function selectedIndex(){ return items.findIndex(it => it.classList.contains('sel')) || 0; }
+
+  menu.style.display = 'block';
+
+  const viewport = window.visualViewport;
+  const leftEdge = viewport?.offsetLeft ?? 0;
+  const topEdge = viewport?.offsetTop ?? 0;
+  const rightEdge = leftEdge + (viewport?.width ?? window.innerWidth);
+  const bottomEdge = topEdge + (viewport?.height ?? window.innerHeight);
+  const margin = 8;
+
+  const rect = menu.getBoundingClientRect();
+
+  const left = Math.max(
+    leftEdge + margin,
+    Math.min(x, rightEdge - rect.width - margin)
+  );
+
+  let top = y + 20;
+  if (top + rect.height > bottomEdge - margin) {
+    top = y - rect.height;
+  }
+
+  top = Math.max(
+    topEdge + margin,
+    Math.min(top, bottomEdge - rect.height - margin)
+  );
+
+  menu.style.left = `${left}px`;
+  menu.style.top = `${top}px`;
 }
 
-menu.addEventListener('mousedown', e => {
-  const li = e.target.closest('li');
-  if(!li) return;
-  choose(li);
+  function hideMenu() {
+    menu.style.display = 'none';
+    triggerIndex = -1;
+  }
+
+  function onInput() {
+    const position = ta.selectionStart;
+    const result = getQuery(ta.value, position);
+
+    if (!result) {
+      hideMenu();
+      return;
+    }
+
+    triggerIndex = result.start;
+
+    const query = result.query.toLowerCase();
+    const matches = suggestions
+      .filter((login) => login.toLowerCase().startsWith(query))
+      .slice(0, 10);
+
+    const caret = getCaretCoordinates(ta, position);
+    showMenu(matches, caret.left, caret.top);
+  }
+
+  function onKey(event) {
+    if (menu.style.display === 'none') {
+      return;
+    }
+
+    const items = Array.from(menu.children);
+    if (!items.length) {
+      return;
+    }
+
+    const selectedIndex = items.findIndex((item) =>
+      item.classList.contains('sel')
+    );
+    const current = selectedIndex === -1 ? 0 : selectedIndex;
+
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+
+      const direction = event.key === 'ArrowDown' ? 1 : -1;
+      const next = Math.max(0, Math.min(items.length - 1, current + direction));
+
+      items.forEach((item) => item.classList.remove('sel'));
+      items[next].classList.add('sel');
+    } else if (event.key === 'Enter' && menu.style.display !== 'none') {
+      event.preventDefault();
+      choose(items[current]);
+    } else if (event.key === 'Escape') {
+      hideMenu();
+    }
+  }
+
+  function choose(li) {
+    if (!li || triggerIndex < 0) {
+      return;
+    }
+
+    const value = li.textContent;
+    const before = ta.value.slice(0, triggerIndex);
+    const after = ta.value.slice(ta.selectionStart);
+    const token = `@${value} `;
+
+    ta.value = before + token + after;
+
+    const newPosition = (before + token).length;
+    ta.setSelectionRange(newPosition, newPosition);
+    ta.focus();
+    hideMenu();
+  }
 });
-
-function choose(li){
-  const val = li.textContent;
-  const before = ta.value.slice(0, triggerIndex);
-  const after = ta.value.slice(ta.selectionStart);
-  const token = `@${val} `;
-  ta.value = before + token + after;
-  const newPos = (before + token).length;
-  ta.setSelectionRange(newPos, newPos);
-  hideMenu();
-}
-})
